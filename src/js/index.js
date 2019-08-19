@@ -1,0 +1,1 @@
+console.log('Hello World');// uglify will remove this code

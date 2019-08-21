@@ -1,0 +1,66 @@
+.container {
+  width: 90%;
+  padding: 1% 5%;
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+  background-color: cadetblue;
+
+  .header {
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 80px;
+    background-color: #99dfdf;
+
+    &-logo {
+      margin-left: 1%;
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+
+      .fa-stethoscope {
+        padding-right: 3%;
+      }
+    }
+
+    &-logo:hover {
+      color: darkred;
+    }
+
+    &-create-btn {
+      margin-right: 5%;
+      padding: 10px;
+      border-radius: 20px;
+      background-color: darkred;
+      border: 1px solid darkred;
+    }
+
+    &-create-btn:hover {
+      background-color: #fff;
+      color: darkred;
+    }
+  }
+
+  .main {
+    height: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url("../img/main-section-bg.jpg") no-repeat center;
+    background-size: cover;
+    font-size: 30px;
+    font-weight: 700;
+    color: darkred;
+
+    &-noItems {
+      animation: beat .9s infinite alternate;
+    }
+  }
+}
+
+@keyframes beat {
+  to {
+    transform: scale(1.3);
+  }
+}

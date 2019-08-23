@@ -10,11 +10,48 @@
     <div class="container">
         <header class="header">
             <a href="#" class="header-logo"><i class="fas fa-stethoscope"></i>DOCTOR VISIT</a>
-            <div class="header-create-btn">Create visit</div>
+            <div class="header-create-btn" id="create-btn">Create visit</div>
         </header>
-        <main class="main">
+        <main class="main" id="main">
             <p class="main-noItems">No items have been added</p>
         </main>
     </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="modal-content-close">&times;</span>
+                <select class="select-doctor" id="doctors">
+                    <option selected disabled value="disabled">Выбирете врача</option>
+                    <option value="cardiologist">Кардиолог</option>
+                    <option value="dentist">Стоматолог</option>
+                    <option value="therapist">Терапевт</option>
+                </select>
+            <form id="modal-form">
+                <input required type="date" name="visit-date" placeholder="дата визита">
+                <div id="cardiologist">
+                    <input name="purpose" type="text" placeholder="цель визита">
+                    <input name="pressure" type="text" placeholder="обычное давление">
+                    <input name="mass" type="text" placeholder="индекс массы тела">
+                    <input name="diseases" type="text" placeholder="перенесенные заболевания сердечно-сосудистой системы">
+                    <input name="age" type="number" placeholder="возраст">
+                    <input name="name" type="text" placeholder="ФИО">
+                </div>
+                <div id="dentist">
+                    <input name="purpose" type="text" placeholder="цель визита">
+                    <input name="date" type="date" placeholder="дата последнего посещения">
+                    <input name="name" type="text" placeholder="ФИО">
+                </div>
+                <div id="therapist">
+                    <input name="purpose" type="text" placeholder="цель визита">
+                    <input name="age" type="number" placeholder="возраст">
+                    <input name="name" type="text" placeholder="ФИО">
+                </div>
+                <textarea name="add-info" class="add-info" maxlength="400" placeholder="Доп.Информация"></textarea>
+                <input type="submit" class="create-card" id="create-card" value="Создать карточку">
+            </form>
+        </div>
+    </div>
+
+    <script src="dist/script.min.js"></script>
 </body>
 </html>

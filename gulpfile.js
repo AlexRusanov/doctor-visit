@@ -36,24 +36,24 @@ function scripts() {
         .pipe($.plumber())
         .pipe(concat('script.min.js'))
         .pipe($.babel())
-        .pipe($.uglify({compress: {drop_console: true}}))
+        // .pipe($.uglify({compress: {drop_console: true}}))
         .pipe(rename('script.min.js'))
         .pipe(dest('./dist/'))
         .pipe(server.reload({stream: true}));
 }
 
-const lintBase = files => {
-    return src(files)
-        .pipe($.eslint({ fix: true }))
-        .pipe(server.reload({stream: true, once: true}))
-        .pipe($.eslint.format())
-        .pipe($.if(!server.active, $.eslint.failAfterError()));
-};
-
-function lint() {
-    return lintBase('src/js/**/*.js')
-        .pipe(dest('src/js'));
-}
+// const lintBase = files => {
+//     return src(files)
+//         .pipe($.eslint({ fix: true }))
+//         .pipe(server.reload({stream: true, once: true}))
+//         .pipe($.eslint.format())
+//         .pipe($.if(!server.active, $.eslint.failAfterError()));
+// };
+//
+// function lint() {
+//     return lintBase('src/js/**/*.js')
+//         .pipe(dest('src/js'));
+// }
 
 function images() {
     return src('src/img/**/*', { since: lastRun(images) })
@@ -73,7 +73,7 @@ function measureSize() {
 const build = series(
     clean,
     parallel(
-        lint,
+        // lint,
         series(parallel(styles, scripts)),
         images),
     measureSize

@@ -83,6 +83,15 @@ class Visit{
 		});
 	};
 
+	displayInfoFromLocale(el) {
+	    for (let property in this) {
+	        if (property === "visitDate" || property === "addInfo" || property === "_hiddenInfo" || property === "fullname") continue;
+            let prop = document.createElement("p");
+            prop.innerText = property + " : " + this[property];
+            el.appendChild(prop);
+        }
+    }
+
     static saveVisitToLocaleStorage(visit, doctor) {
         let temp = {};
 
@@ -216,6 +225,7 @@ function createCard(localeStorageData){
         }
 
         dragableCardDoctor.innerText = localeStorageData.doctor;
+        newCard.displayInfoFromLocale(hiddenProps);
     } else {
         switch(doctors.value){
             case "cardiologist":

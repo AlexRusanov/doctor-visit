@@ -42,7 +42,6 @@ function required(doctor){
 	});
 }
 
-
 let doctors = document.getElementById("doctors");
 let cardiologist = document.getElementById("cardiologist"),
 	dentist = document.getElementById("dentist"),
@@ -71,9 +70,9 @@ doctors.onchange = function(){
 
 // let draggableCard;
 class Visit{
-	constructor(){
-		this.visitDate = modalForm.elements["visit-date"].value;
-		this.addInfo = modalForm.elements["add-info"].value;
+	constructor(visitDate = modalForm.elements["visit-date"].value, addInfo = modalForm.elements["add-info"].value){
+		this.visitDate = visitDate;
+		this.addInfo = addInfo;
 	};
 
 	displayInfo(el){
@@ -108,8 +107,6 @@ class Visit{
     static deleteVisitFromLocaleStorage(card) {
         let visitList = JSON.parse(localStorage.getItem('visits'));
 
-        console.dir(visitList);
-
         let cardData = Array.from(card.children).map(function(elem) {
             return elem.innerText;
         });
@@ -124,39 +121,46 @@ class Visit{
     }
 
     static retrieveVisitsFromLocaleStorage() {
-        // let visitList = JSON.parse(localStorage.getItem('visits'));
+        let visitList = JSON.parse(localStorage.getItem('visits'));
+
+        if (visitList !== null && visitList.length > 0) {
+            for (let elem of visitList) {
+                createCard(elem);
+                toggleNoItemAdded();
+            }
+        }
     }
 }
 
 class Cardiologist extends Visit{
-	constructor(){
-		super();
-		this.purpose = cardiologist.children["purpose"].value;
-		this.pressure = cardiologist.children["pressure"].value;
-		this.mass = cardiologist.children["mass"].value;
-		this.diseases = cardiologist.children["diseases"].value;
-		this.age = cardiologist.children["age"].value;
-		this.fullname = cardiologist.children["name"].value;
+	constructor(visitDate, addInfo, purpose = cardiologist.children["purpose"].value, pressure = cardiologist.children["pressure"].value, mass = cardiologist.children["mass"].value, diseases = cardiologist.children["diseases"].value, age = cardiologist.children["age"].value, fullname = cardiologist.children["name"].value){
+		super(visitDate, addInfo);
+		this.purpose = purpose;
+		this.pressure = pressure;
+		this.mass = mass;
+		this.diseases = diseases;
+		this.age = age;
+		this.fullname = fullname;
 		this._hiddenInfo = [cardiologist.children["purpose"], cardiologist.children["pressure"], cardiologist.children["mass"], cardiologist.children["diseases"], cardiologist.children["age"]];
 	};
 }
 
 class Dentist extends Visit{
-	constructor() {
-		super();
-		this.purpose = dentist.children["purpose"].value;
-		this.fullname = dentist.children["name"].value;
-		this.date = dentist.children["date"].value;
+	constructor(visitDate, addInfo, purpose = dentist.children["purpose"].value, fullname = dentist.children["name"].value, date = dentist.children["date"].value) {
+		super(visitDate, addInfo);
+		this.purpose = purpose;
+		this.fullname = fullname;
+		this.date = date;
 		this._hiddenInfo = [dentist.children["purpose"], dentist.children["date"]];
 	};
 }
 
 class Therapist extends Visit{
-	constructor() {
-		super();
-		this.purpose = therapist.children["purpose"].value;
-		this.fullname = therapist.children["name"].value;
-		this.age = therapist.children["age"].value;
+	constructor(visitDate, addInfo, purpose = therapist.children["purpose"].value, fullname = therapist.children["name"].value, age = therapist.children["age"].value) {
+		super(visitDate, addInfo);
+		this.purpose = purpose;
+		this.fullname = fullname;
+		this.age = age;
 		this._hiddenInfo = [therapist.children["purpose"], therapist.children["age"]];
 	};
 }
@@ -172,7 +176,7 @@ modalForm.onsubmit = function(evt){
 	}
 };
 
-function createCard(){
+function createCard(localeStorageData){
 	let draggableCard = document.createElement("div");
 	draggableCard.classList.add("draggable-card");
 	let dragableCardName = document.createElement("p");
@@ -194,38 +198,57 @@ function createCard(){
 
 	document.getElementById("main").appendChild(draggableCard);
     let newCard;
-	switch(doctors.value){
-		case "cardiologist":
-			newCard = new Cardiologist();
-			break;
-		case "dentist":
-			newCard = new Dentist();
-			break;
-		case "therapist":
-			newCard = new Therapist();
-			break;
-	}
+
+    let hiddenProps = document.createElement("div");
+    hiddenProps.style.fontWeight = "400";
+
+    if (localeStorageData !== undefined) {
+        switch(localeStorageData.doctor){
+            case "cardiologist":
+                newCard = new Cardiologist(localeStorageData.visitDate, localeStorageData.addInfo, localeStorageData.purpose, localeStorageData.pressure, localeStorageData.mass, localeStorageData.diseases, localeStorageData.age, localeStorageData.fullname);
+                break;
+            case "dentist":
+                newCard = new Dentist(localeStorageData.visitDate, localeStorageData.addInfo, localeStorageData.purpose, localeStorageData.fullname, localeStorageData.date);
+                break;
+            case "therapist":
+                newCard = new Therapist(localeStorageData.visitDate, localeStorageData.addInfo, localeStorageData.purpose, localeStorageData.fullname, localeStorageData.age);
+                break;
+        }
+
+        dragableCardDoctor.innerText = localeStorageData.doctor;
+    } else {
+        switch(doctors.value){
+            case "cardiologist":
+                newCard = new Cardiologist();
+                break;
+            case "dentist":
+                newCard = new Dentist();
+                break;
+            case "therapist":
+                newCard = new Therapist();
+                break;
+        }
+
+        dragableCardDoctor.innerText = doctors.value;
+        newCard.displayInfo(hiddenProps);
+        Visit.saveVisitToLocaleStorage(newCard, doctors.value);
+    }
 
 	draggableCardClose.innerText = "x";
-	draggableCardClose.addEventListener("click", function(){
-	    Visit.deleteVisitFromLocaleStorage(draggableCard);
-		draggableCard.remove();
-        toggleNoItemAdded();
+	main.addEventListener("click", function(){
+	    if (event.target === draggableCardClose) {
+            Visit.deleteVisitFromLocaleStorage(draggableCard);
+            draggableCard.remove();
+            toggleNoItemAdded();
+        }
 	});
 
 	dragableCardName.innerText = newCard.fullname;
-	dragableCardDoctor.innerText = doctors.value;
 	draggableCardAditional.innerText = newCard.addInfo;
 	draggableCardAditional.style.fontWeight = "400";
 	draggableCardExpand.innerText = "показать больше";
 	draggableCardReduce.innerText = "показать меньше";
 	draggableCardReduce.style.fontWeight = "400";
-
-	let hiddenProps = document.createElement("div");
-	hiddenProps.style.fontWeight = "400";
-	newCard.displayInfo(hiddenProps);
-
-	Visit.saveVisitToLocaleStorage(newCard, doctors.value);
 
 	draggableCardExpand.onclick = function(){
 		draggableCard.appendChild(hiddenProps);
@@ -252,3 +275,5 @@ function toggleNoItemAdded() {
         document.getElementById("no-items").style.display = "block";
     }
 }
+
+window.onload = Visit.retrieveVisitsFromLocaleStorage;

@@ -84,7 +84,7 @@ class Visit{
 		});
 	};
 
-    static saveVisitToLocaleStorage(visit) {
+    static saveVisitToLocaleStorage(visit, doctor) {
         let temp = {};
 
         for (let key in visit) {
@@ -92,7 +92,39 @@ class Visit{
             temp[key] = visit[key];
         }
 
-        localStorage.setItem("card", JSON.stringify(temp));
+        temp.doctor = doctor;
+
+        let result = [];
+
+        if (localStorage.getItem('visits') !== null) {
+            result = JSON.parse(localStorage.getItem('visits'));
+        }
+
+        result.push(temp);
+
+        localStorage.setItem("visits", JSON.stringify(result));
+    }
+
+    static deleteVisitFromLocaleStorage(card) {
+        let visitList = JSON.parse(localStorage.getItem('visits'));
+
+        console.dir(visitList);
+
+        let cardData = Array.from(card.children).map(function(elem) {
+            return elem.innerText;
+        });
+
+        for (let i = 0; i < visitList.length; i++) {
+            if (visitList[i].fullname === cardData[0] && visitList[i].doctor === cardData[1]) {
+                visitList.splice(i, 1);
+            }
+        }
+
+        localStorage.setItem("visits", JSON.stringify(visitList));
+    }
+
+    static retrieveVisitsFromLocaleStorage() {
+        // let visitList = JSON.parse(localStorage.getItem('visits'));
     }
 }
 
@@ -173,11 +205,14 @@ function createCard(){
 			newCard = new Therapist();
 			break;
 	}
+
 	draggableCardClose.innerText = "x";
 	draggableCardClose.addEventListener("click", function(){
+	    Visit.deleteVisitFromLocaleStorage(draggableCard);
 		draggableCard.remove();
         toggleNoItemAdded();
 	});
+
 	dragableCardName.innerText = newCard.fullname;
 	dragableCardDoctor.innerText = doctors.value;
 	draggableCardAditional.innerText = newCard.addInfo;
@@ -190,7 +225,7 @@ function createCard(){
 	hiddenProps.style.fontWeight = "400";
 	newCard.displayInfo(hiddenProps);
 
-	Visit.saveVisitToLocaleStorage(newCard);
+	Visit.saveVisitToLocaleStorage(newCard, doctors.value);
 
 	draggableCardExpand.onclick = function(){
 		draggableCard.appendChild(hiddenProps);

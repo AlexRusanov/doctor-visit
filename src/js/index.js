@@ -75,6 +75,7 @@ class Visit{
 		this.visitDate = modalForm.elements["visit-date"].value;
 		this.addInfo = modalForm.elements["add-info"].value;
 	};
+
 	displayInfo(el){
 		this._hiddenInfo.forEach(function(elem){
 			let prop = document.createElement("p");
@@ -82,38 +83,49 @@ class Visit{
 			el.appendChild(prop);
 		});
 	};
+
+    static saveVisitToLocaleStorage(visit) {
+        let temp = {};
+
+        for (let key in visit) {
+            if (key === "_hiddenInfo") continue;
+            temp[key] = visit[key];
+        }
+
+        localStorage.setItem("card", JSON.stringify(temp));
+    }
 }
 
 class Cardiologist extends Visit{
 	constructor(){
 		super();
-		this.purpose = cardiologist.children["purpose"];
-		this.pressure = cardiologist.children["pressure"];
-		this.mass = cardiologist.children["mass"];
-		this.diseases = cardiologist.children["diseases"];
-		this.age = cardiologist.children["age"];
+		this.purpose = cardiologist.children["purpose"].value;
+		this.pressure = cardiologist.children["pressure"].value;
+		this.mass = cardiologist.children["mass"].value;
+		this.diseases = cardiologist.children["diseases"].value;
+		this.age = cardiologist.children["age"].value;
 		this.fullname = cardiologist.children["name"].value;
-		this._hiddenInfo = [this.purpose, this.pressure, this.mass, this.diseases, this.age];
+		this._hiddenInfo = [cardiologist.children["purpose"], cardiologist.children["pressure"], cardiologist.children["mass"], cardiologist.children["diseases"], cardiologist.children["age"]];
 	};
 }
 
 class Dentist extends Visit{
 	constructor() {
 		super();
-		this.purpose = dentist.children["purpose"];
+		this.purpose = dentist.children["purpose"].value;
 		this.fullname = dentist.children["name"].value;
-		this.date = dentist.children["date"];
-		this._hiddenInfo = [this.purpose, this.date];
+		this.date = dentist.children["date"].value;
+		this._hiddenInfo = [dentist.children["purpose"], dentist.children["date"]];
 	};
 }
 
 class Therapist extends Visit{
 	constructor() {
 		super();
-		this.purpose = therapist.children["purpose"];
+		this.purpose = therapist.children["purpose"].value;
 		this.fullname = therapist.children["name"].value;
-		this.age = therapist.children["age"];
-		this._hiddenInfo = [this.purpose, this.age];
+		this.age = therapist.children["age"].value;
+		this._hiddenInfo = [therapist.children["purpose"], therapist.children["age"]];
 	};
 }
 
@@ -177,6 +189,8 @@ function createCard(){
 	let hiddenProps = document.createElement("div");
 	hiddenProps.style.fontWeight = "400";
 	newCard.displayInfo(hiddenProps);
+
+	Visit.saveVisitToLocaleStorage(newCard);
 
 	draggableCardExpand.onclick = function(){
 		draggableCard.appendChild(hiddenProps);
